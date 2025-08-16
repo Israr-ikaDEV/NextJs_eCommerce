@@ -48,10 +48,13 @@ const categories = [
 
 const Categories = () => {
 const searchParams = useSearchParams();
-const selectedCategory = searchParams.get("category") ;
-console.log(selectedCategory)
 const pathname= usePathname();
 const router = useRouter();
+
+const selectedCategory = searchParams.get("category") ;
+console.log(selectedCategory)
+
+
 const handleChange =(value:string|null)=>{
     const params = new URLSearchParams(searchParams);
     params.set("category", value || "all");
