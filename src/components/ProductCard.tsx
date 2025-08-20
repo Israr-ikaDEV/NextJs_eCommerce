@@ -1,83 +1,118 @@
+
 "use client";
 
+import useCartStore from "@/stores/cartStore";
 import { ProductType } from "@/types";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
-
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
-  const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+  const [productTypes, setProductTypes] = useState({
+    size: product.sizes[0],
+    color: product.colors[0],
+  });
+
+  const { addToCart } = useCartStore();
+
+  const handleProductType = ({
+    type,
+    value,
+  }: {
+    type: "size" | "color";
+    value: string;
+  }) => {
+    setProductTypes((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
+  };
+
+  const handleAddToCart = () => {
+    addToCart({
+      ...product,
+      quantity: 1,
+      selectedSize: productTypes.size,
+      selectedColor: productTypes.color,
+    });
+    toast.success("Product added to cart")
+  };
 
   return (
-    <div className="shadow-lg bg-gray-200  shadow-md rounded-lg overflow-hidden">
+    <div className="shadow-lg rounded-lg overflow-hidden">
+      {/* IMAGE */}
       <Link href={`/products/${product.id}`}>
-        <div className="relative aspect-[2/3] bg-gray-200">
+        <div className="relative aspect-[2/3]">
           <Image
-            src={product.images[selectedColor]}
+            src={product.images[productTypes.color]}
             alt={product.name}
             fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+
             className="object-cover hover:scale-105 transition-all duration-300"
           />
         </div>
       </Link>
-      <div className="p-4 flex flex-col gap-4">
-
-         {/* proc=duct details */}
-        <h1 className=" font-medium ">{product.name}</h1>
-        <p className="text-gray-600 text-sm mb-4">{product.shortDescription}</p>
-
-        <div className="flex  items-center  text-xs gap-4">
-          {" "}
-          {/* Size Selector */}
-          <div className=" flex flex-col  gap-1">
-            <span className=" text-gray-700">Size:</span>
+      {/* PRODUCT DETAIL */}
+      <div className="flex flex-col gap-4 p-4">
+        <h1 className="font-medium">{product.name}</h1>
+        <p className="text-sm text-gray-500">{product.shortDescription}</p>
+        {/* PRODUCT TYPES */}
+        <div className="flex items-center gap-4 text-xs">
+          {/* SIZES */}
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-500">Size</span>
             <select
-                id="size"
-                className="border rounded px-2 py-1 text-sm bg-white text-black focus:outline-none focus:bg-gray-300  focus:ring-1 focus:ring-black"
+              name="size"
+              id="size"
+              className="ring ring-gray-300 rounded-md px-2 py-1"
+              onChange={(e) =>
+                handleProductType({ type: "size", value: e.target.value })
+              }
             >
-                {product.sizes.map((size) => (
-                    <option
-                        key={size}
-                        value={size}
-                        className="uppercase"
-                        style={{ textTransform: "uppercase" }}
-                    >
-                        {size.toUpperCase()}
-                    </option>
-                ))}
+              {product.sizes.map((size) => (
+                <option key={size} value={size}>
+                  {size.toUpperCase()}
+                </option>
+              ))}
             </select>
           </div>
-          {/* Color Selector */}
-          <div className="mb-2 flex  flex-col items-center gap-1">
-            <span className=" text-gray-700">Color:</span>
-          <div className="flex items-center gap-2">  {product.colors.map((color) => (
-              <button
-                key={color}
-                className={`w-6 h-6 rounded-full border-2 ${
-                  selectedColor === color
-                    ? "border-blue-500 ring-2 ring-blue-300"
-                    : "border-gray-300"
-                } focus:outline-none`}
-                style={{ backgroundColor: color }}
-                aria-label={color}
-                type="button"
-                onClick={() => setSelectedColor(color)}
-              />
-            ))}</div>
+          {/* COLORS */}
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-500">Color</span>
+            <div className="flex items-center gap-2">
+              {product.colors.map((color) => (
+                <div
+                  className={`cursor-pointer border-1 ${
+                    productTypes.color === color
+                      ? "border-gray-400"
+                      : "border-gray-200"
+                  } rounded-full p-[1.2px]`}
+                  key={color}
+                  onClick={() =>
+                    handleProductType({ type: "color", value: color })
+                  }
+                >
+                  <div
+                    className="w-[14px] h-[14px] rounded-full"
+                    style={{ backgroundColor: color }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+        {/* PRICE AND ADD TO CART BUTTON */}
         <div className="flex items-center justify-between">
-          <span className="text-xl font-bold">${product.price.toFixed(2)}</span>
+          <p className="font-medium">${product.price.toFixed(2)}</p>
           <button
-            className="bg-white text-black shadow-lg border border-gray-300 px-4 py-2 rounded hover:bg-gray-300 transition-300 hover:scale-105 duration-300"
-            type="button"
-            // Add onClick handler for add to cart
+            onClick={handleAddToCart}
+            className="ring-1 ring-gray-200 shadow-lg rounded-md px-2 py-1 text-sm cursor-pointer hover:text-white hover:bg-black transition-all duration-300 flex items-center gap-2"
           >
-            <div className="flex gap-2 text-sm">
-              <ShoppingCart /> Add to Cart
-            </div>
+            <ShoppingCart className="w-4 h-4" />
+            Add to Cart
           </button>
         </div>
       </div>
