@@ -1,6 +1,5 @@
 import ProductList from "@/components/ProductList"
 import Image from "next/image"
-import { ToastContainer } from "react-toastify";
 
 const Homepage =  async({searchParams}:{searchParams: Promise<{category?: string}>}) => {
 const category = (await searchParams).category;
@@ -11,7 +10,6 @@ const category = (await searchParams).category;
   <Image src="/featured.png" alt="Featured products" fill/>
 </div>
 <ProductList category={category ?? ""} params="homepage"/>
-<ToastContainer />
     </div>
   )
 }

@@ -12,7 +12,7 @@ const ShopingCartIcon = () => {
 
     <Link  href="/cart" className="relative">
         <ShoppingCart className="w-4 h-4  text-gray-600"  />
-        <span className="absolute -top-3 -right-3 text-xs bg-amber-500 text-gray-600 rounded-full px-1">{cart.length}</span>
+        <span className="absolute -top-3 -right-3 text-xs bg-amber-500 text-gray-600 rounded-full px-1">{cart.reduce((acc, item) => acc + item.quantity, 0)}</span>
         </Link>
   );
 };
