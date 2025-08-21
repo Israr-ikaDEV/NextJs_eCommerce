@@ -25,9 +25,11 @@ export const generateMetadata = async ({
 }: {
   params: { id: string };
 }) => {
+  // TODO:get the product from db
+  // TEMPORARY
   return {
     title: product.name,
-    description: product.description, // 🔧 typo fixed from `describe`
+    describe: product.description,
   };
 };
 
@@ -35,15 +37,13 @@ const ProductPage = async ({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams?: { color?: string; size?: string }; // 🔧 optional and not a Promise
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ color: string; size: string }>;
 }) => {
-  const size = searchParams?.size;
-  const color = searchParams?.color;
+  const { size, color } = await searchParams;
 
-  const selectedSize = size || product.sizes[0];
-  const selectedColor = color || product.colors[0];
-
+  const selectedSize = size || (product.sizes[0] as string);
+  const selectedColor = color || (product.colors[0] as string);
   return (
     <div className="flex flex-col gap-4 lg:flex-row md:gap-12 mt-12">
       {/* IMAGE */}
